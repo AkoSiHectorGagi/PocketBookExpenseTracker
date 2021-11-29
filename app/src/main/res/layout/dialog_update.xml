@@ -27,7 +27,7 @@
     android:textSize="18sp" />
 
     <EditText
-    android:id="@+id/etUpdateName"
+    android:id="@+id/edt_addName"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="0.75"
@@ -48,7 +48,7 @@
     android:textSize="18sp" />
 
     <EditText
-    android:id="@+id/etUpdateEmailId"
+    android:id="@+id/edt_addAmount"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="0.75"
@@ -64,7 +64,7 @@
     android:orientation="horizontal">
 
     <TextView
-    android:id="@+id/tvUpdate"
+    android:id="@+id/tv_add"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:foreground="?attr/selectableItemBackground"
@@ -75,7 +75,7 @@
     android:textStyle="bold" />
 
     <TextView
-    android:id="@+id/tvCancel"
+    android:id="@+id/tv_cancel"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:foreground="?attr/selectableItemBackground"

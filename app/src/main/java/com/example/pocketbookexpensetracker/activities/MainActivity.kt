@@ -38,25 +38,41 @@ class MainActivity : AppCompatActivity() {
     }
     //Method for saving the employee records in database
     private fun addRecord() {
-        val name = etName.text.toString()
-        val email = etEmailId.text.toString()
-        val databaseHandler = DatabaseHandler(this)
-        if (!name.isEmpty() && !email.isEmpty()) {
-            val status =
-                databaseHandler.addEmployee(EmpModelClass(0, name, email))
-            if (status > -1) {
-            Toast.makeText(applicationContext, "Record saved", Toast.LENGTH_LONG).show()
-            etName.text.clear()
-            etEmailId.text.clear()
-                setupListofDataIntoRecyclerView()
+        val addDialog = Dialog(this)
+        addDialog.setCancelable(true)
+        addDialog.setContentView(R.layout.dialog_add)
+        val edtAddName = addDialog.findViewById<EditText>(R.id.edt_addName)
+        val edtAddAmount = addDialog.findViewById<EditText>(R.id.edt_addAmount)
+        val btnAdd = addDialog.findViewById<TextView>(R.id.tv_add)
+        val btnCancel = addDialog.findViewById<TextView>(R.id.tv_cancel)
+
+        btnAdd.setOnClickListener(View.OnClickListener {
+
+            val name = edtAddName.text.toString()
+            val email = edtAddAmount.text.toString()
+
+            val databaseHandler = DatabaseHandler(this)
+
+            if (!name.isEmpty() && !email.isEmpty()) {
+                val status =
+                    databaseHandler.addEmployee(EmpModelClass(0, name, email))
+                if (status > -1) {
+                    Toast.makeText(applicationContext, "Expense Added", Toast.LENGTH_LONG).show()
+                    setupListofDataIntoRecyclerView()
+                    addDialog.dismiss()
+                }
+            } else {
+                Toast.makeText(
+                    applicationContext,
+                    "Name or Email cannot be blank",
+                    Toast.LENGTH_LONG
+                ).show()
             }
-        } else {
-            Toast.makeText(
-                applicationContext,
-                "Name or Email cannot be blank",
-                Toast.LENGTH_LONG
-            ).show()
-        }
+        })
+        btnCancel.setOnClickListener(View.OnClickListener {
+            addDialog.dismiss()
+        })
+        addDialog.show()
     }
     /**
      * Method is used to show the custom update dialog.
@@ -70,10 +86,10 @@ class MainActivity : AppCompatActivity() {
          The resource will be inflated, adding all top-level views to the screen.*/
         updateDialog.setContentView(R.layout.dialog_update)
 
-        val etUpdateName = updateDialog.findViewById<EditText>(R.id.etUpdateName)
-        val etUpdateEmailId = updateDialog.findViewById<EditText>(R.id.etUpdateEmailId)
-        val tvUpdate = updateDialog.findViewById<TextView>(R.id.tvUpdate)
-        val tvCancel = updateDialog.findViewById<TextView>(R.id.tvCancel)
+        val etUpdateName = updateDialog.findViewById<EditText>(R.id.edt_addName)
+        val etUpdateEmailId = updateDialog.findViewById<EditText>(R.id.edt_addAmount)
+        val tvUpdate = updateDialog.findViewById<TextView>(R.id.tv_add)
+        val tvCancel = updateDialog.findViewById<TextView>(R.id.tv_cancel)
 
         etUpdateName.setText(empModelClass.name)
         etUpdateEmailId.setText(empModelClass.email)

@@ -11,10 +11,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketbookexpensetracker.R
 import com.example.pocketbookexpensetracker.activities.MainActivity
-import com.example.pocketbookexpensetracker.models.ExpensesModelClass
+import com.example.pocketbookexpensetracker.models.ExpenseModelClass
 
 
-class ItemAdapter(val context: Context, val items: ArrayList<ExpensesModelClass>) :
+class ItemAdapter(val context: Context, val items: ArrayList<ExpenseModelClass>) :
 RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
     /**

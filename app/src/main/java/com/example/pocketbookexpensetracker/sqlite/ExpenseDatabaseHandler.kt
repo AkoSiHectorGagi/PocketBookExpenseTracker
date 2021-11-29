@@ -10,25 +10,28 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.pocketbookexpensetracker.models.ExpenseModelClass
 
 //creating the database logic, extending the SQLiteOpenHelper base class
-class DatabaseHandler(context: Context) :
+class ExpenseDatabaseHandler(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private val DATABASE_VERSION = 2
+        private val DATABASE_VERSION = 5
         private val DATABASE_NAME = "ExpenseDatabase"
 
-        private val TABLE_CONTACTS = "ExpensesTable"
+        private val TABLE_CONTACTS = "ExpenseTable"
 
         private val KEY_ID = "_id"
         private val KEY_NAME = "name"
         private val KEY_EXPENSE_AMOUNT = "amount"
+        private val KEY_GROUP_ID = "group_id"
     }
+
+
 
     override fun onCreate(db: SQLiteDatabase?) {
         //creating table with fields
         val CREATE_CONTACTS_TABLE = ("CREATE TABLE " + TABLE_CONTACTS + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
-                + KEY_EXPENSE_AMOUNT + " INTEGER" + ")")
+                + KEY_EXPENSE_AMOUNT + " INTEGER," + KEY_GROUP_ID + " INTEGER" + ")")
         db?.execSQL(CREATE_CONTACTS_TABLE)
     }
 
@@ -45,7 +48,7 @@ class DatabaseHandler(context: Context) :
         val contentValues = ContentValues()
         contentValues.put(KEY_NAME, expense.name) // EmpModelClass Name
         contentValues.put(KEY_EXPENSE_AMOUNT, expense.amount) // EmpModelClass Email
-
+        contentValues.put(KEY_GROUP_ID, expense.groupId)
         // Inserting employee details using insert query.
         val success = db.insert(TABLE_CONTACTS, null, contentValues)
         //2nd argument is String containing nullColumnHack
@@ -76,14 +79,16 @@ class DatabaseHandler(context: Context) :
         var id: Int
         var name: String
         var amount: Int
+        var groupId: Int
 
         if (cursor.moveToFirst()) {
             do {
                 id = cursor.getInt(cursor.getColumnIndex(KEY_ID))
                 name = cursor.getString(cursor.getColumnIndex(KEY_NAME))
                 amount = cursor.getInt(cursor.getColumnIndex(KEY_EXPENSE_AMOUNT))
+                groupId = cursor.getInt(cursor.getColumnIndex(KEY_GROUP_ID))
 
-                val exp = ExpenseModelClass(id = id, name = name, amount = amount)
+                val exp = ExpenseModelClass(id = id, name = name, amount = amount, groupId = groupId)
                 expenseList.add(exp)
 
             } while (cursor.moveToNext())

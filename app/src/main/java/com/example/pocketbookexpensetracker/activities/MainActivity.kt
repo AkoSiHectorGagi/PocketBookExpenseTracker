@@ -4,13 +4,14 @@ import android.app.AlertDialog
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketbookexpensetracker.adapters.ItemAdapter
 import com.example.pocketbookexpensetracker.models.ExpenseModelClass
-import com.example.pocketbookexpensetracker.sqlite.DatabaseHandler
+import com.example.pocketbookexpensetracker.sqlite.ExpenseDatabaseHandler
 import com.example.pocketbookexpensetracker.R
 
 
@@ -44,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupListofDataIntoRecyclerView()
-
+        logger()
 
 
     }
@@ -63,11 +64,11 @@ class MainActivity : AppCompatActivity() {
             val name = edtAddName.text.toString()
             val amount = edtAddAmount.text.toString()
 
-            val databaseHandler = DatabaseHandler(this)
+            val databaseHandler = ExpenseDatabaseHandler(this)
 
             if (!name.isEmpty() && !amount.isEmpty()) {
                 val status =
-                    databaseHandler.addExpense(ExpenseModelClass(0, name, amount.toInt()))
+                    databaseHandler.addExpense(ExpenseModelClass(0, name, amount.toInt(),0))
                 if (status > -1) {
                     Toast.makeText(applicationContext, "Expense Added", Toast.LENGTH_LONG).show()
                     setupListofDataIntoRecyclerView()
@@ -111,11 +112,11 @@ class MainActivity : AppCompatActivity() {
             val name = etUpdateName.text.toString()
             val amount = etUpdateEmailId.text.toString()
 
-            val databaseHandler = DatabaseHandler(this)
+            val databaseHandler = ExpenseDatabaseHandler(this)
 
             if (!name.isEmpty() && !amount.isEmpty()) {
                 val status =
-                    databaseHandler.updateExpense(ExpenseModelClass(expenseModelClass.id, name, amount.toInt()))
+                    databaseHandler.updateExpense(ExpenseModelClass(expenseModelClass.id, name, amount.toInt(),0))
                 if (status > -1) {
                     Toast.makeText(applicationContext, "Record Updated.", Toast.LENGTH_LONG).show()
 
@@ -153,9 +154,9 @@ class MainActivity : AppCompatActivity() {
         builder.setPositiveButton("Yes") { dialogInterface, which ->;
 
             //creating the instance of DatabaseHandler class
-            val databaseHandler: DatabaseHandler = DatabaseHandler(this)
+            val expenseDatabaseHandler: ExpenseDatabaseHandler = ExpenseDatabaseHandler(this)
             //calling the deleteEmployee method of DatabaseHandler class to delete record
-            val status = databaseHandler.deleteExpense(ExpenseModelClass(expenseModelClass.id, "", expenseModelClass.amount))
+            val status = expenseDatabaseHandler.deleteExpense(ExpenseModelClass(expenseModelClass.id, "", expenseModelClass.amount,expenseModelClass.groupId))
             if (status > -1) {
                 Toast.makeText(
                     applicationContext,
@@ -185,9 +186,9 @@ class MainActivity : AppCompatActivity() {
      */
     private fun getItemsList(): ArrayList<ExpenseModelClass> {
         //creating the instance of DatabaseHandler class
-        val databaseHandler: DatabaseHandler = DatabaseHandler(this)
+        val expenseDatabaseHandler: ExpenseDatabaseHandler = ExpenseDatabaseHandler(this)
         //calling the viewEmployee method of DatabaseHandler class to read the records
-        val expenseList: ArrayList<ExpenseModelClass> = databaseHandler.viewExpense()
+        val expenseList: ArrayList<ExpenseModelClass> = expenseDatabaseHandler.viewExpense()
 
         return expenseList
     }
@@ -219,5 +220,9 @@ class MainActivity : AppCompatActivity() {
             total +=  getItemsList()[i-1].amount
         }
         txtTotalExpense.setText(total.toString())
+    }
+
+    private fun logger(){
+        Log.i("tag",getItemsList()[2].groupId.toString())
     }
 }

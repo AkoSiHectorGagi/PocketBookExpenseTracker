@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -13,7 +12,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketbookexpensetracker.adapters.ItemAdapter
-import com.example.pocketbookexpensetracker.models.EmpModelClass
+import com.example.pocketbookexpensetracker.models.ExpensesModelClass
 import com.example.pocketbookexpensetracker.sqlite.DatabaseHandler
 import com.example.pocketbookexpensetracker.R
 
@@ -38,7 +37,6 @@ class MainActivity : AppCompatActivity() {
             addRecord()
         }
         setupListofDataIntoRecyclerView()
-        calculateTotalExpense()
 
 
 
@@ -56,13 +54,13 @@ class MainActivity : AppCompatActivity() {
         btnAdd.setOnClickListener(View.OnClickListener {
 
             val name = edtAddName.text.toString()
-            val email = edtAddAmount.text.toString()
+            val amount = edtAddAmount.text.toString()
 
             val databaseHandler = DatabaseHandler(this)
 
-            if (!name.isEmpty() && !email.isEmpty()) {
+            if (!name.isEmpty() && !amount.isEmpty()) {
                 val status =
-                    databaseHandler.addEmployee(EmpModelClass(0, name, email))
+                    databaseHandler.addEmployee(ExpensesModelClass(0, name, amount.toInt()))
                 if (status > -1) {
                     Toast.makeText(applicationContext, "Expense Added", Toast.LENGTH_LONG).show()
                     setupListofDataIntoRecyclerView()
@@ -84,7 +82,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Method is used to show the custom update dialog.
      */
-    fun updateRecordDialog(empModelClass: EmpModelClass) {
+    fun updateRecordDialog(expensesModelClass: ExpensesModelClass) {
 
 
         val updateDialog = Dialog(this)
@@ -98,19 +96,19 @@ class MainActivity : AppCompatActivity() {
         val tvUpdate = updateDialog.findViewById<TextView>(R.id.tv_add)
         val tvCancel = updateDialog.findViewById<TextView>(R.id.tv_cancel)
 
-        etUpdateName.setText(empModelClass.name)
-        etUpdateEmailId.setText(empModelClass.email)
+        etUpdateName.setText(expensesModelClass.name)
+        etUpdateEmailId.setText(expensesModelClass.amount)
 
         tvUpdate.setOnClickListener(View.OnClickListener {
 
             val name = etUpdateName.text.toString()
-            val email = etUpdateEmailId.text.toString()
+            val amount = etUpdateEmailId.text.toString()
 
             val databaseHandler = DatabaseHandler(this)
 
-            if (!name.isEmpty() && !email.isEmpty()) {
+            if (!name.isEmpty() && !amount.isEmpty()) {
                 val status =
-                    databaseHandler.updateEmployee(EmpModelClass(empModelClass.id, name, email))
+                    databaseHandler.updateEmployee(ExpensesModelClass(expensesModelClass.id, name, amount.toInt()))
                 if (status > -1) {
                     Toast.makeText(applicationContext, "Record Updated.", Toast.LENGTH_LONG).show()
 
@@ -136,12 +134,12 @@ class MainActivity : AppCompatActivity() {
     /**
      * Method is used to show the delete alert dialog.
      */
-    fun deleteRecordAlertDialog(empModelClass: EmpModelClass) {
+    fun deleteRecordAlertDialog(expensesModelClass: ExpensesModelClass) {
         val builder = AlertDialog.Builder(this)
         //set title for alert dialog
         builder.setTitle("Delete Record")
         //set message for alert dialog
-        builder.setMessage("Are you sure you wants to delete ${empModelClass.name}.")
+        builder.setMessage("Are you sure you wants to delete ${expensesModelClass.name}.")
         builder.setIcon(android.R.drawable.ic_dialog_alert)
 
         //performing positive action
@@ -150,7 +148,7 @@ class MainActivity : AppCompatActivity() {
             //creating the instance of DatabaseHandler class
             val databaseHandler: DatabaseHandler = DatabaseHandler(this)
             //calling the deleteEmployee method of DatabaseHandler class to delete record
-            val status = databaseHandler.deleteEmployee(EmpModelClass(empModelClass.id, "", ""))
+            val status = databaseHandler.deleteEmployee(ExpensesModelClass(expensesModelClass.id, "", expensesModelClass.amount))
             if (status > -1) {
                 Toast.makeText(
                     applicationContext,
@@ -178,13 +176,13 @@ class MainActivity : AppCompatActivity() {
     /**
      * Function is used to get the Items List which is added in the database table.
      */
-    private fun getItemsList(): ArrayList<EmpModelClass> {
+    private fun getItemsList(): ArrayList<ExpensesModelClass> {
         //creating the instance of DatabaseHandler class
         val databaseHandler: DatabaseHandler = DatabaseHandler(this)
         //calling the viewEmployee method of DatabaseHandler class to read the records
-        val empList: ArrayList<EmpModelClass> = databaseHandler.viewEmployee()
+        val expensesList: ArrayList<ExpensesModelClass> = databaseHandler.viewEmployee()
 
-        return empList
+        return expensesList
     }
     /**
      * Function is used to show the list on UI of inserted data.
@@ -205,12 +203,13 @@ class MainActivity : AppCompatActivity() {
             rvItemsList.visibility = View.GONE
             tvNoRecordsAvailable.visibility = View.VISIBLE
         }
+        calculateTotalExpense()
     }
     private fun calculateTotalExpense(){
         var total = 0
-        for (i in 1..getItemsList().size-1) {
+        for (i in 1..getItemsList().size) {
 
-            total +=  getItemsList()[i].id
+            total +=  getItemsList()[i-1].amount
         }
         txtTotalExpense.setText(total.toString())
     }

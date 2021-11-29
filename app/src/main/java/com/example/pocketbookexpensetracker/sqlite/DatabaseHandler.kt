@@ -7,28 +7,28 @@ import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
-import com.example.pocketbookexpensetracker.models.EmpModelClass
+import com.example.pocketbookexpensetracker.models.ExpensesModelClass
 
 //creating the database logic, extending the SQLiteOpenHelper base class
 class DatabaseHandler(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private val DATABASE_VERSION = 1
-        private val DATABASE_NAME = "EmployeeDatabase"
+        private val DATABASE_VERSION = 2
+        private val DATABASE_NAME = "ExpenseDatabase"
 
-        private val TABLE_CONTACTS = "EmployeeTable"
+        private val TABLE_CONTACTS = "ExpensesTable"
 
         private val KEY_ID = "_id"
         private val KEY_NAME = "name"
-        private val KEY_EMAIL = "email"
+        private val KEY_EXPENSE_AMOUNT = "amount"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
         //creating table with fields
         val CREATE_CONTACTS_TABLE = ("CREATE TABLE " + TABLE_CONTACTS + "("
                 + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT,"
-                + KEY_EMAIL + " TEXT" + ")")
+                + KEY_EXPENSE_AMOUNT + " INTEGER" + ")")
         db?.execSQL(CREATE_CONTACTS_TABLE)
     }
 
@@ -39,12 +39,12 @@ class DatabaseHandler(context: Context) :
     /**
      * Function to insert data
      */
-    fun addEmployee(emp: EmpModelClass): Long {
+    fun addEmployee(expenses: ExpensesModelClass): Long {
         val db = this.writableDatabase
 
         val contentValues = ContentValues()
-        contentValues.put(KEY_NAME, emp.name) // EmpModelClass Name
-        contentValues.put(KEY_EMAIL, emp.email) // EmpModelClass Email
+        contentValues.put(KEY_NAME, expenses.name) // EmpModelClass Name
+        contentValues.put(KEY_EXPENSE_AMOUNT, expenses.amount) // EmpModelClass Email
 
         // Inserting employee details using insert query.
         val success = db.insert(TABLE_CONTACTS, null, contentValues)
@@ -54,9 +54,9 @@ class DatabaseHandler(context: Context) :
         return success
     }
     //Method to read the records from database in form of ArrayList
-    fun viewEmployee(): ArrayList<EmpModelClass> {
+    fun viewEmployee(): ArrayList<ExpensesModelClass> {
 
-        val empList: ArrayList<EmpModelClass> = ArrayList<EmpModelClass>()
+        val expensesList: ArrayList<ExpensesModelClass> = ArrayList<ExpensesModelClass>()
 
         // Query to select all the records from the table.
         val selectQuery = "SELECT  * FROM $TABLE_CONTACTS"
@@ -75,32 +75,32 @@ class DatabaseHandler(context: Context) :
 
         var id: Int
         var name: String
-        var email: String
+        var amount: Int
 
         if (cursor.moveToFirst()) {
             do {
                 id = cursor.getInt(cursor.getColumnIndex(KEY_ID))
                 name = cursor.getString(cursor.getColumnIndex(KEY_NAME))
-                email = cursor.getString(cursor.getColumnIndex(KEY_EMAIL))
+                amount = cursor.getInt(cursor.getColumnIndex(KEY_EXPENSE_AMOUNT))
 
-                val emp = EmpModelClass(id = id, name = name, email = email)
-                empList.add(emp)
+                val exp = ExpensesModelClass(id = id, name = name, amount = amount)
+                expensesList.add(exp)
 
             } while (cursor.moveToNext())
         }
-        return empList
+        return expensesList
     }
     /**
      * Function to update record
      */
-    fun updateEmployee(emp: EmpModelClass): Int {
+    fun updateEmployee(expenses: ExpensesModelClass): Int {
         val db = this.writableDatabase
         val contentValues = ContentValues()
-        contentValues.put(KEY_NAME, emp.name) // EmpModelClass Name
-        contentValues.put(KEY_EMAIL, emp.email) // EmpModelClass Email
+        contentValues.put(KEY_NAME, expenses.name) // EmpModelClass Name
+        contentValues.put(KEY_EXPENSE_AMOUNT, expenses.amount) // EmpModelClass Email
 
         // Updating Row
-        val success = db.update(TABLE_CONTACTS, contentValues, KEY_ID + "=" + emp.id, null)
+        val success = db.update(TABLE_CONTACTS, contentValues, KEY_ID + "=" + expenses.id, null)
         //2nd argument is String containing nullColumnHack
 
         // Closing database connection
@@ -110,12 +110,12 @@ class DatabaseHandler(context: Context) :
     /**
      * Function to delete record
      */
-    fun deleteEmployee(emp: EmpModelClass): Int {
+    fun deleteEmployee(expenses: ExpensesModelClass): Int {
         val db = this.writableDatabase
         val contentValues = ContentValues()
-        contentValues.put(KEY_ID, emp.id) // EmpModelClass id
+        contentValues.put(KEY_ID, expenses.id) // EmpModelClass id
         // Deleting Row
-        val success = db.delete(TABLE_CONTACTS, KEY_ID + "=" + emp.id, null)
+        val success = db.delete(TABLE_CONTACTS, KEY_ID + "=" + expenses.id, null)
         //2nd argument is String containing nullColumnHack
 
         // Closing database connection

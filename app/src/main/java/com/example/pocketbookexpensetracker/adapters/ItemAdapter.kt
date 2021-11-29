@@ -11,16 +11,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketbookexpensetracker.R
 import com.example.pocketbookexpensetracker.activities.MainActivity
-import com.example.pocketbookexpensetracker.models.EmpModelClass
-import android.widget.AdapterView
-
-import android.widget.AdapterView.OnItemLongClickListener
+import com.example.pocketbookexpensetracker.models.ExpensesModelClass
 
 
-
-
-
-class ItemAdapter(val context: Context, val items: ArrayList<EmpModelClass>) :
+class ItemAdapter(val context: Context, val items: ArrayList<ExpensesModelClass>) :
 RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
     /**
@@ -54,7 +48,7 @@ RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
         val item = items.get(position)
 
         holder.tvName.text= item.name
-        holder.tvEmail.text = item.email
+        holder.tvEmail.text = item.amount.toString()
 
 
 

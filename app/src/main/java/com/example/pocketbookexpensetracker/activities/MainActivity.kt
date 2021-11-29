@@ -13,6 +13,8 @@ import com.example.pocketbookexpensetracker.adapters.ItemAdapter
 import com.example.pocketbookexpensetracker.models.ExpenseModelClass
 import com.example.pocketbookexpensetracker.sqlite.ExpenseDatabaseHandler
 import com.example.pocketbookexpensetracker.R
+import com.example.pocketbookexpensetracker.models.ExpensesModelClass
+import com.example.pocketbookexpensetracker.sqlite.ExpensesDatabaseHandler
 
 
 class MainActivity : AppCompatActivity() {
@@ -25,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_main)
 
+        addBudget()
 
         rvItemsList = findViewById(R.id.rvItemsList)
         tvNoRecordsAvailable = findViewById(R.id.tvNoRecordsAvailable)
@@ -49,6 +52,43 @@ class MainActivity : AppCompatActivity() {
 
 
     }
+
+    private fun addBudget(){
+        val budgetDialog = Dialog(this)
+        budgetDialog.setCancelable(false)
+        budgetDialog.setContentView(R.layout.dialog_budget)
+        val edtAddBudget = budgetDialog.findViewById<EditText>(R.id.edt_addBudget)
+        val btnAdd = budgetDialog.findViewById<TextView>(R.id.tv_add)
+
+
+        btnAdd.setOnClickListener(View.OnClickListener {
+
+            val budget = edtAddBudget.text.toString()
+            val balance = edtAddBudget.text.toString()
+
+            val databaseHandler = ExpensesDatabaseHandler(this)
+
+            if (!budget.isEmpty()) {
+                val status =
+                    databaseHandler.addExpense(ExpensesModelClass(budget.toInt(),balance.toInt(),"Nov 30", 0 ))
+                if (status > -1) {
+                    Toast.makeText(applicationContext, "Expense Added", Toast.LENGTH_LONG).show()
+                    setupListofDataIntoRecyclerView()
+                    budgetDialog.dismiss()
+                }
+            } else {
+                Toast.makeText(
+                    applicationContext,
+                    "Budget cannot be empty",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        })
+        budgetDialog.show()
+    }
+
+
+
     //Method for saving the employee records in database
     private fun addRecord() {
         val addDialog = Dialog(this)

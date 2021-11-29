@@ -5,10 +5,7 @@ import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketbookexpensetracker.adapters.ItemAdapter
@@ -36,6 +33,16 @@ class MainActivity : AppCompatActivity() {
         addButton.setOnClickListener {
             addRecord()
         }
+
+        var ivLeftArrow = findViewById<ImageView>(R.id.iv_left_arrow)
+        ivLeftArrow.setOnClickListener{
+            //left arrow
+        }
+        var ivRightArrow = findViewById<ImageView>(R.id.iv_right_arrow)
+        ivRightArrow.setOnClickListener{
+            //right arrow
+        }
+
         setupListofDataIntoRecyclerView()
 
 

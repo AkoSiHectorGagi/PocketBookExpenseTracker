@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">PocketBookExpenseTracker</string>
+    <string name="name_label">Name</string>
+    <string name="email_id">Email ID</string>
+    <string name="add_record_label">ADD RECORD</string>
+    <string name="all_the_inserted_records_label">All the inserted records</string>
+    <string name="email_label">Email</string>
+    <string name="update_record_label">Update Record</string>
+    <string name="update_label">Update</string>
+    <string name="cancel_label">Cancel</string>
+    <string name="email_id_label">Email ID</string>
+    <string name="enter_email_id_label">Enter Email ID</string>
+    <string name="no_records_available_label">No records available!!!</string>
+</resources>

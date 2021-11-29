@@ -224,7 +224,7 @@ class MainActivity : AppCompatActivity() {
     /**
      * Function is used to get the Items List which is added in the database table.
      */
-    private fun getItemsList(): ArrayList<ExpenseModelClass> {
+    private fun getExpenseItemsList(): ArrayList<ExpenseModelClass> {
         //creating the instance of DatabaseHandler class
         val expenseDatabaseHandler: ExpenseDatabaseHandler = ExpenseDatabaseHandler(this)
         //calling the viewEmployee method of DatabaseHandler class to read the records
@@ -232,19 +232,29 @@ class MainActivity : AppCompatActivity() {
 
         return expenseList
     }
+
+    private fun getExpensesItemsList(): ArrayList<ExpensesModelClass> {
+        //creating the instance of DatabaseHandler class
+        val expensesDatabaseHandler: ExpensesDatabaseHandler = ExpensesDatabaseHandler(this)
+        //calling the viewEmployee method of DatabaseHandler class to read the records
+        val expensesList: ArrayList<ExpensesModelClass> = expensesDatabaseHandler.viewExpense()
+
+        return expensesList
+    }
+
     /**
      * Function is used to show the list on UI of inserted data.
      */
     private fun setupListofDataIntoRecyclerView() {
 
-        if (getItemsList().size > 0) {
+        if (getExpenseItemsList().size > 0) {
             rvItemsList.visibility = View.VISIBLE
             tvNoRecordsAvailable.visibility = View.GONE
 
             // Set the LayoutManager that this RecyclerView will use.
             rvItemsList.layoutManager = LinearLayoutManager(this)
             // Adapter class is initialized and list is passed in the param.
-            val itemAdapter = ItemAdapter(this, getItemsList())
+            val itemAdapter = ItemAdapter(this, getExpenseItemsList())
             // adapter instance is set to the recyclerview to inflate the items.
             rvItemsList.adapter = itemAdapter
         } else {
@@ -255,14 +265,14 @@ class MainActivity : AppCompatActivity() {
     }
     private fun calculateTotalExpense(){
         var total = 0
-        for (i in 1..getItemsList().size) {
+        for (i in 1..getExpenseItemsList().size) {
 
-            total +=  getItemsList()[i-1].amount
+            total +=  getExpenseItemsList()[i-1].amount
         }
         txtTotalExpense.setText(total.toString())
     }
 
     private fun logger(){
-        Log.i("tag",getItemsList()[2].groupId.toString())
+        Log.i("tag",getExpenseItemsList()[2].groupId.toString())
     }
 }

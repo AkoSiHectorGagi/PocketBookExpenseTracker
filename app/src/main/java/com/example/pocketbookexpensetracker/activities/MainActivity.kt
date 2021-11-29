@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
@@ -18,23 +19,29 @@ import com.example.pocketbookexpensetracker.R
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var etName: EditText
-    lateinit var etEmailId: EditText
+
     lateinit var rvItemsList: RecyclerView
     lateinit var tvNoRecordsAvailable: TextView
+    lateinit var txtTotalExpense: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_main)
 
-        etName = findViewById(R.id.etName)
-        etEmailId = findViewById(R.id.etEmailId)
+
         rvItemsList = findViewById(R.id.rvItemsList)
         tvNoRecordsAvailable = findViewById(R.id.tvNoRecordsAvailable)
+        txtTotalExpense = findViewById(R.id.txt_totalExpense)
+
         val addButton = findViewById<Button>(R.id.btnAdd)
         addButton.setOnClickListener {
             addRecord()
         }
         setupListofDataIntoRecyclerView()
+        calculateTotalExpense()
+
+
+
     }
     //Method for saving the employee records in database
     private fun addRecord() {
@@ -198,5 +205,13 @@ class MainActivity : AppCompatActivity() {
             rvItemsList.visibility = View.GONE
             tvNoRecordsAvailable.visibility = View.VISIBLE
         }
+    }
+    private fun calculateTotalExpense(){
+        var total = 0
+        for (i in 1..getItemsList().size-1) {
+
+            total +=  getItemsList()[i].id
+        }
+        txtTotalExpense.setText(total.toString())
     }
 }

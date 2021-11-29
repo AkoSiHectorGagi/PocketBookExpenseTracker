@@ -12,6 +12,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.pocketbookexpensetracker.R
 import com.example.pocketbookexpensetracker.activities.MainActivity
 import com.example.pocketbookexpensetracker.models.EmpModelClass
+import android.widget.AdapterView
+
+import android.widget.AdapterView.OnItemLongClickListener
+
+
+
 
 
 class ItemAdapter(val context: Context, val items: ArrayList<EmpModelClass>) :
@@ -49,6 +55,9 @@ RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
         holder.tvName.text= item.name
         holder.tvEmail.text = item.email
+
+
+
         holder.ivEdit.setOnClickListener {
             if(context is MainActivity){
                 context.updateRecordDialog(item)

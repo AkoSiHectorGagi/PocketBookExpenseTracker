@@ -5,6 +5,7 @@
     android:layout_height="40dp"
     android:layout_gravity="center_vertical"
     android:layout_marginTop="10dp"
+    android:background="@color/colorWhite"
     android:orientation="horizontal">
 
     <TextView
@@ -13,7 +14,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_weight=".5"
-        android:text="@string/name_label" />
+        android:fontFamily="@font/andada"
+        android:text="@string/name_label"
+        android:textColor="@color/text_color"
+        android:textSize="10sp" />
 
     <TextView
         android:id="@+id/tv_email"
@@ -21,7 +25,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_weight=".5"
-        android:text="@string/email_label" />
+        android:fontFamily="@font/andada"
+        android:text="@string/email_label"
+        android:textColor="@color/text_color"
+        android:textSize="10sp" />
 
     <ImageView
         android:id="@+id/iv_edit"

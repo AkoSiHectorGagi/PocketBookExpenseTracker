@@ -18,7 +18,6 @@ import com.example.pocketbookexpensetracker.sqlite.ExpensesDatabaseHandler
 import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
@@ -73,18 +72,19 @@ class MainActivity : AppCompatActivity() {
             if (currentIndex == getExpensesItemsList().size - 1) {
                 currentIndex++
                 addBudget()
-            } else
+            } else {
                 currentIndex++
-
+                setupDataofExpenses(currentIndex)
+            }
             displayButton()
-            setupDataofExpenses(currentIndex)
+
         }
 
 
         displayButton()
         setupListofDataIntoRecyclerView()
         setupDataofExpenses(currentIndex)
-//100        log()
+       log()
 
 
     }
@@ -118,14 +118,9 @@ class MainActivity : AppCompatActivity() {
 
             val budget = edtAddBudget.text.toString()
             val balance = edtAddBudget.text.toString()
-            var date = " "
 
             val databaseHandler = ExpensesDatabaseHandler(this)
 
-            if(currentIndex == 0)
-                date = getDate()
-            else
-                date = getTommorowDate()
 
             if (!budget.isEmpty()) {
                 val status =
@@ -133,7 +128,7 @@ class MainActivity : AppCompatActivity() {
                         ExpensesModelClass(
                             budget.toInt(),
                             balance.toInt(),
-                            date,
+                            getDate(currentIndex),
                             currentIndex
                         )
                     )
@@ -142,6 +137,7 @@ class MainActivity : AppCompatActivity() {
                     //setupListofDataIntoRecyclerView()
                     setupDataofExpenses(currentIndex)
                     budgetDialog.dismiss()
+                    Log.i("mytag", "size " + getExpensesItemsList().size)
                 }
             } else {
                 Toast.makeText(
@@ -349,7 +345,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupDataofExpenses(index: Int) {
 
         try {
-            txtDate.text = getExpensesItemsList()[index].date
+            txtDate.text = getExpensesItemsList()[index].date.toString()//getExpensesItemsList()[index].date
             txtBudget.text = getExpensesItemsList()[index].balance.toString()
             txtBalance.text = getExpensesItemsList()[index].budget.toString()
         } catch (Ex: Exception) {
@@ -367,30 +363,33 @@ class MainActivity : AppCompatActivity() {
         txtTotalExpense.setText(total.toString())
     }
 
-    private fun getDate(): String {
-        val formatter = DateTimeFormatter.ofPattern("MMMM dd")
-        val today: LocalDate = LocalDate.now()
-       // val tomorrow: LocalDate = today.plusDays(1)
-        val formatted = today.format(formatter)
-        return formatted
+    private fun getDate(int : Int): String {
+
+
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.DAY_OF_YEAR, int)
+        val month_date = SimpleDateFormat("MMMM dd")
+        val month_name = month_date.format(cal.time)
+
+
+
+        return month_name.toString()
     }
 
-    private fun getTommorowDate(): String{
-        val formatter = DateTimeFormatter.ofPattern("MMMM dd")
-        val today: LocalDate = LocalDate.now()
-        val tomorrow: LocalDate = today.plusDays(1)
-        val formatted = today.format(formatter)
-        return formatted
-    }
 
     private fun log() {
-        var totalrecords = 0
-        for (i in 1..getExpensesItemsList().size)
-            totalrecords += 1
+        try {
+            var totalrecords = 0
+            for (i in 1..getExpensesItemsList().size)
+                Log.i("mytag", "Dates: " + getExpensesItemsList()[i-1].date)
 
-        Log.i("mytag", "total records: " + totalrecords.toString())
-        Log.i("mytag", "current Index: " + currentIndex.toString())
-        Log.i("mytag", getExpensesItemsList()[currentIndex].date)
+            Log.i("mytag", "total records: " + totalrecords.toString())
+            Log.i("mytag", "current Index: " + currentIndex.toString())
+            Log.i("mytag", getExpensesItemsList()[currentIndex].date)
+        }catch (Ex:Exception){
+
+        }
+
     }
 
 }

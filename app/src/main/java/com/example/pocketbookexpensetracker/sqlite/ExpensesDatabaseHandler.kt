@@ -42,7 +42,7 @@ class ExpensesDatabaseHandler(context: Context) :
     /**
      * Function to insert data
      */
-    fun addExpense(expenses: ExpensesModelClass): Long {
+    fun addExpenses(expenses: ExpensesModelClass): Long {
         val db = this.writableDatabase
 
         val contentValues = ContentValues()
@@ -59,7 +59,7 @@ class ExpensesDatabaseHandler(context: Context) :
         return success
     }
     //Method to read the records from database in form of ArrayList
-    fun viewExpense(): ArrayList<ExpensesModelClass> {
+    fun viewExpenses(): ArrayList<ExpensesModelClass> {
 
         val expenseList: ArrayList<ExpensesModelClass> = ArrayList<ExpensesModelClass>()
 
@@ -100,7 +100,7 @@ class ExpensesDatabaseHandler(context: Context) :
     /**
      * Function to update record
      */
-    fun updateExpense(expenses: ExpensesModelClass): Int {
+    fun updateExpenses(expenses: ExpensesModelClass): Int {
         val db = this.writableDatabase
         val contentValues = ContentValues()
         contentValues.put(KEY_BUDGET, expenses.budget)
@@ -118,7 +118,7 @@ class ExpensesDatabaseHandler(context: Context) :
     /**
      * Function to delete record
      */
-    fun deleteExpense(expenses: ExpensesModelClass): Int {
+    fun deleteExpenses(expenses: ExpensesModelClass): Int {
         val db = this.writableDatabase
         val contentValues = ContentValues()
         contentValues.put(KEY_GROUP_ID, expenses.groupId) // EmpModelClass id

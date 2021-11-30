@@ -14,7 +14,7 @@ class ExpenseDatabaseHandler(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private val DATABASE_VERSION = 2
+        private val DATABASE_VERSION = 3
         private val DATABASE_NAME = "ExpenseDatabase"
 
         private val TABLE_CONTACTS = "ExpenseTable"
@@ -57,12 +57,12 @@ class ExpenseDatabaseHandler(context: Context) :
         return success
     }
     //Method to read the records from database in form of ArrayList
-    fun viewExpense(): ArrayList<ExpenseModelClass> {
+    fun viewExpense(currentIndex: Int): ArrayList<ExpenseModelClass> {
 
         val expenseList: ArrayList<ExpenseModelClass> = ArrayList<ExpenseModelClass>()
 
         // Query to select all the records from the table.
-        val selectQuery = "SELECT  * FROM $TABLE_CONTACTS"
+        val selectQuery = "SELECT  * FROM $TABLE_CONTACTS WHERE $KEY_GROUP_ID == "+currentIndex.toInt()
 
         val db = this.readableDatabase
         // Cursor is used to read the record one by one. Add them to data model class.

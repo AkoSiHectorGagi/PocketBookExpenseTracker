@@ -78,7 +78,6 @@ class MainActivity : AppCompatActivity() {
 
             displayButton()
             setupDataofExpenses(currentIndex)
-            setupListofDataIntoRecyclerView()
         }
 
 
@@ -104,6 +103,7 @@ class MainActivity : AppCompatActivity() {
         else {
             ivLeftArrow.visibility = View.VISIBLE
         }
+        setupListofDataIntoRecyclerView()
     }
 
     private fun addBudget() {
@@ -169,7 +169,7 @@ class MainActivity : AppCompatActivity() {
 
             if (!name.isEmpty() && !amount.isEmpty()) {
                 val status =
-                    databaseHandler.addExpense(ExpenseModelClass(0, name, amount.toInt(), 0))
+                    databaseHandler.addExpense(ExpenseModelClass(0, name, amount.toInt(), currentIndex))
                 if (status > -1) {
                     Toast.makeText(applicationContext, "Expense Added", Toast.LENGTH_LONG).show()
                     //getExpensesItemsList()[currentIndex].budget-= amount.toInt()
@@ -306,7 +306,7 @@ class MainActivity : AppCompatActivity() {
         //creating the instance of DatabaseHandler class
         val expenseDatabaseHandler: ExpenseDatabaseHandler = ExpenseDatabaseHandler(this)
         //calling the viewEmployee method of DatabaseHandler class to read the records
-        val expenseList: ArrayList<ExpenseModelClass> = expenseDatabaseHandler.viewExpense()
+        val expenseList: ArrayList<ExpenseModelClass> = expenseDatabaseHandler.viewExpense(currentIndex)
 
         return expenseList
     }

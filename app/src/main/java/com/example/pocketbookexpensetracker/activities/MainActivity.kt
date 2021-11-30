@@ -118,8 +118,14 @@ class MainActivity : AppCompatActivity() {
 
             val budget = edtAddBudget.text.toString()
             val balance = edtAddBudget.text.toString()
+            var date = " "
 
             val databaseHandler = ExpensesDatabaseHandler(this)
+
+            if(currentIndex == 0)
+                date = getDate()
+            else
+                date = getTommorowDate()
 
             if (!budget.isEmpty()) {
                 val status =
@@ -127,7 +133,7 @@ class MainActivity : AppCompatActivity() {
                         ExpensesModelClass(
                             budget.toInt(),
                             balance.toInt(),
-                            getDate(),
+                            date,
                             currentIndex
                         )
                     )
@@ -341,12 +347,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupDataofExpenses(index: Int) {
+
         try {
-            txtDate.text = getDate()
+            txtDate.text = getExpensesItemsList()[index].date
             txtBudget.text = getExpensesItemsList()[index].balance.toString()
             txtBalance.text = getExpensesItemsList()[index].budget.toString()
         } catch (Ex: Exception) {
-            Log.e("error", "era")
+            Log.e("error", "error")
         }
 
     }
@@ -361,12 +368,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getDate(): String {
-        //val current = LocalDateTime.now()
         val formatter = DateTimeFormatter.ofPattern("MMMM dd")
-        //val formatted = current.format(formatter)
+        val today: LocalDate = LocalDate.now()
+       // val tomorrow: LocalDate = today.plusDays(1)
+        val formatted = today.format(formatter)
+        return formatted
+    }
+
+    private fun getTommorowDate(): String{
+        val formatter = DateTimeFormatter.ofPattern("MMMM dd")
         val today: LocalDate = LocalDate.now()
         val tomorrow: LocalDate = today.plusDays(1)
-        val formatted = tomorrow.format(formatter)
+        val formatted = today.format(formatter)
         return formatted
     }
 

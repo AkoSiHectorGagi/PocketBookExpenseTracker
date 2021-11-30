@@ -32,17 +32,20 @@ class MainActivity : AppCompatActivity() {
     lateinit var txtDate: TextView
     lateinit var txtBudget: TextView
     lateinit var txtBalance: TextView
+    lateinit var ivLeftArrow: ImageView
+    lateinit var ivRightArrow: ImageView
+
     var currentIndex: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_main)
 
-        if (getExpensesItemsList().size == 0) {//checks if there is existing budget
-            addBudget()
-            currentIndex = 0
-        } else
-            currentIndex = getExpensesItemsList().size - 1
+        initializeBudget()
+
+
+
+
 
         rvItemsList = findViewById(R.id.rvItemsList)
         tvNoRecordsAvailable = findViewById(R.id.tvNoRecordsAvailable)
@@ -50,35 +53,57 @@ class MainActivity : AppCompatActivity() {
         txtDate = findViewById(R.id.txt_date)
         txtBudget = findViewById(R.id.txt_budget_amount)
         txtBalance = findViewById(R.id.txt_bal_amount)
+        ivLeftArrow = findViewById<ImageView>(R.id.iv_left_arrow)
+        ivRightArrow = findViewById<ImageView>(R.id.iv_right_arrow)
+
 
         val addButton = findViewById<Button>(R.id.btnAdd)
         addButton.setOnClickListener {
             addRecord()
         }
 
-        var ivLeftArrow = findViewById<ImageView>(R.id.iv_left_arrow)
+
         ivLeftArrow.setOnClickListener {
             currentIndex--
-            log()
+            setupDataofExpenses(currentIndex)
+            displayButton()
         }
-        var ivRightArrow = findViewById<ImageView>(R.id.iv_right_arrow)
+
         ivRightArrow.setOnClickListener {
             if (currentIndex == getExpensesItemsList().size - 1) {
                 currentIndex++
                 addBudget()
             } else
                 currentIndex++
-//            log()
-//            txtDate.setText(getExpensesItemsList()[currentIndex].date)
+
+            displayButton()
+            setupDataofExpenses(currentIndex)
             setupListofDataIntoRecyclerView()
-            setupDataofExpenses()
         }
 
+
+        displayButton()
         setupListofDataIntoRecyclerView()
-        setupDataofExpenses()
-        log()
+        setupDataofExpenses(currentIndex)
+//100        log()
 
 
+    }
+
+    private fun initializeBudget() {
+        if (getExpensesItemsList().size == 0) {//checks if there is existing budget
+            addBudget()
+            currentIndex = 0
+        } else
+            currentIndex = getExpensesItemsList().size - 1
+    }
+
+    private fun displayButton() {
+        if (currentIndex == 0)
+            ivLeftArrow.visibility = View.INVISIBLE
+        else {
+            ivLeftArrow.visibility = View.VISIBLE
+        }
     }
 
     private fun addBudget() {
@@ -109,7 +134,7 @@ class MainActivity : AppCompatActivity() {
                 if (status > -1) {
                     Toast.makeText(applicationContext, "Budget Added", Toast.LENGTH_LONG).show()
                     //setupListofDataIntoRecyclerView()
-                    setupDataofExpenses()
+                    setupDataofExpenses(currentIndex)
                     budgetDialog.dismiss()
                 }
             } else {
@@ -147,6 +172,7 @@ class MainActivity : AppCompatActivity() {
                     databaseHandler.addExpense(ExpenseModelClass(0, name, amount.toInt(), 0))
                 if (status > -1) {
                     Toast.makeText(applicationContext, "Expense Added", Toast.LENGTH_LONG).show()
+                    //getExpensesItemsList()[currentIndex].budget-= amount.toInt()
                     setupListofDataIntoRecyclerView()
                     addDialog.dismiss()
                 }
@@ -171,7 +197,7 @@ class MainActivity : AppCompatActivity() {
 
 
         val updateDialog = Dialog(this)
-        updateDialog.setCancelable(false)
+        updateDialog.setCancelable(true)
         /*Set the screen content from a layout resource.
          The resource will be inflated, adding all top-level views to the screen.*/
         updateDialog.setContentView(R.layout.dialog_update)
@@ -314,13 +340,13 @@ class MainActivity : AppCompatActivity() {
         calculateTotalExpense()
     }
 
-    private fun setupDataofExpenses(){
+    private fun setupDataofExpenses(index: Int) {
         try {
             txtDate.text = getDate()
-            txtBudget.text = getExpensesItemsList()[currentIndex].balance.toString()
-            txtBalance.text = getExpensesItemsList()[currentIndex].budget.toString()
+            txtBudget.text = getExpensesItemsList()[index].balance.toString()
+            txtBalance.text = getExpensesItemsList()[index].budget.toString()
         } catch (Ex: Exception) {
-            Log.e("error","era")
+            Log.e("error", "era")
         }
 
     }

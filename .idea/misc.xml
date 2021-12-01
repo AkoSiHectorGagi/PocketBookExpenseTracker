@@ -11,9 +11,11 @@
         <entry key="..\:/AndroidStudio/PocketBookExpenseTracker/app/src/main/res/layout/activity_main.xml" value="0.23641304347826086" />
         <entry key="..\:/AndroidStudio/PocketBookExpenseTracker/app/src/main/res/layout/content_main.xml" value="0.403125" />
         <entry key="..\:/AndroidStudio/PocketBookExpenseTracker/app/src/main/res/layout/dialog_add.xml" value="0.5" />
+        <entry key="..\:/AndroidStudio/PocketBookExpenseTracker/app/src/main/res/layout/dialog_balance.xml" value="0.20520833333333333" />
         <entry key="..\:/AndroidStudio/PocketBookExpenseTracker/app/src/main/res/layout/dialog_budget.xml" value="0.67" />
+        <entry key="..\:/AndroidStudio/PocketBookExpenseTracker/app/src/main/res/layout/dialog_edit_balance.xml" value="0.5" />
         <entry key="..\:/AndroidStudio/PocketBookExpenseTracker/app/src/main/res/layout/dialog_update.xml" value="0.33" />
-        <entry key="..\:/AndroidStudio/PocketBookExpenseTracker/app/src/main/res/layout/items_row.xml" value="0.33" />
+        <entry key="..\:/AndroidStudio/PocketBookExpenseTracker/app/src/main/res/layout/items_row.xml" value="0.5" />
       </map>
     </option>
   </component>

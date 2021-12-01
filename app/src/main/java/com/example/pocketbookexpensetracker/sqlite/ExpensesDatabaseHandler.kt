@@ -12,7 +12,7 @@ class ExpensesDatabaseHandler(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private val DATABASE_VERSION = 11
+        private val DATABASE_VERSION = 23
         private val DATABASE_NAME = "ExpensesDatabase"
 
         private val TABLE_CONTACTS = "ExpensesTable"
@@ -20,18 +20,19 @@ class ExpensesDatabaseHandler(context: Context) :
 
         private val KEY_BUDGET = "budget"
         private val KEY_BALANCE = "balance"
+        private val KEY_TOTAL_EXPENSES = "total_expenses"
         private val KEY_DATE = "date"
         private val KEY_GROUP_ID = "group_id"
-    }
 
+    }
 
 
     override fun onCreate(db: SQLiteDatabase?) {
         //creating table with fields
         val CREATE_CONTACTS_TABLE = ("CREATE TABLE " + TABLE_CONTACTS + "("
-                + " INTEGER ," + KEY_BUDGET + " INTEGER,"
-                + KEY_BALANCE + " INTEGER," + KEY_DATE + " TEXT,"+ KEY_GROUP_ID + " INTEGER PRIMARY KEY, FOREIGN KEY("+KEY_GROUP_ID+")"
-                + "REFERENCES ExpenseTable("+KEY_GROUP_ID+")"+")")
+                + " INTEGER ," + KEY_BUDGET + " INTEGER," + KEY_BALANCE + " INTEGER,"
+                + KEY_TOTAL_EXPENSES + " INTEGER," + KEY_DATE + " TEXT," + KEY_GROUP_ID + " INTEGER PRIMARY KEY, FOREIGN KEY(" + KEY_GROUP_ID + ")"
+                + "REFERENCES ExpenseTable(" + KEY_GROUP_ID + ")" + ")")
         db?.execSQL(CREATE_CONTACTS_TABLE)
     }
 
@@ -39,6 +40,7 @@ class ExpensesDatabaseHandler(context: Context) :
         db!!.execSQL("DROP TABLE IF EXISTS $TABLE_CONTACTS")
         onCreate(db)
     }
+
     /**
      * Function to insert data
      */
@@ -48,6 +50,7 @@ class ExpensesDatabaseHandler(context: Context) :
         val contentValues = ContentValues()
         contentValues.put(KEY_BUDGET, expenses.budget) // ExpensesModelClass budget
         contentValues.put(KEY_BALANCE, expenses.balance) // ExpensesModelClass balance
+        contentValues.put(KEY_TOTAL_EXPENSES, expenses.totalExpenses)
         contentValues.put(KEY_DATE, expenses.date)
         contentValues.put(KEY_GROUP_ID, expenses.groupId)
 
@@ -58,6 +61,7 @@ class ExpensesDatabaseHandler(context: Context) :
         db.close() // Closing database connection
         return success
     }
+
     //Method to read the records from database in form of ArrayList
     fun viewExpenses(): ArrayList<ExpensesModelClass> {
 
@@ -80,6 +84,7 @@ class ExpensesDatabaseHandler(context: Context) :
 
         var budget: Int
         var balance: Int
+        var totalExpenses: Int
         var date: String
         var group_id: Int
 
@@ -87,16 +92,24 @@ class ExpensesDatabaseHandler(context: Context) :
             do {
                 budget = cursor.getInt(cursor.getColumnIndex(KEY_BUDGET))
                 balance = cursor.getInt(cursor.getColumnIndex(KEY_BALANCE))
+                totalExpenses = cursor.getInt(cursor.getColumnIndex(KEY_TOTAL_EXPENSES))
                 date = cursor.getString(cursor.getColumnIndex(KEY_DATE))
                 group_id = cursor.getInt(cursor.getColumnIndex(KEY_GROUP_ID))
 
-                val exp = ExpensesModelClass(budget = budget, balance = balance, date = date, groupId = group_id)
+                val exp = ExpensesModelClass(
+                    budget = budget,
+                    balance = balance,
+                    totalExpenses = totalExpenses,
+                    date = date,
+                    groupId = group_id
+                )
                 expenseList.add(exp)
 
             } while (cursor.moveToNext())
         }
         return expenseList
     }
+
     /**
      * Function to update record
      */
@@ -108,13 +121,15 @@ class ExpensesDatabaseHandler(context: Context) :
 
 
         // Updating Row
-        val success = db.update(TABLE_CONTACTS, contentValues, KEY_GROUP_ID + "=" + expenses.groupId, null)
+        val success =
+            db.update(TABLE_CONTACTS, contentValues, KEY_GROUP_ID + "=" + expenses.groupId, null)
         //2nd argument is String containing nullColumnHack
 
         // Closing database connection
         db.close()
         return success
     }
+
     /**
      * Function to delete record
      */

@@ -15,11 +15,10 @@ import com.example.pocketbookexpensetracker.sqlite.ExpenseDatabaseHandler
 import com.example.pocketbookexpensetracker.R
 import com.example.pocketbookexpensetracker.models.ExpensesModelClass
 import com.example.pocketbookexpensetracker.sqlite.ExpensesDatabaseHandler
-import java.lang.Exception
+import com.google.android.material.snackbar.Snackbar
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.Exception
 import kotlin.collections.ArrayList
 
 
@@ -27,12 +26,12 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var rvItemsList: RecyclerView
     lateinit var tvNoRecordsAvailable: TextView
-    lateinit var txtTotalExpense: TextView
     lateinit var txtDate: TextView
     lateinit var txtBudget: TextView
     lateinit var txtBalance: TextView
     lateinit var ivLeftArrow: ImageView
     lateinit var ivRightArrow: ImageView
+
 
     var currentIndex: Int = 0
 
@@ -48,7 +47,6 @@ class MainActivity : AppCompatActivity() {
 
         rvItemsList = findViewById(R.id.rvItemsList)
         tvNoRecordsAvailable = findViewById(R.id.tvNoRecordsAvailable)
-        txtTotalExpense = findViewById(R.id.txt_totalExpense)
         txtDate = findViewById(R.id.txt_date)
         txtBudget = findViewById(R.id.txt_budget_amount)
         txtBalance = findViewById(R.id.txt_bal_amount)
@@ -64,8 +62,7 @@ class MainActivity : AppCompatActivity() {
 
         ivLeftArrow.setOnClickListener {
             currentIndex--
-            setupDataofExpenses(currentIndex)
-            displayButton()
+            displayAll()
         }
 
         ivRightArrow.setOnClickListener {
@@ -74,20 +71,26 @@ class MainActivity : AppCompatActivity() {
                 addBudget()
             } else {
                 currentIndex++
-                setupDataofExpenses(currentIndex)
             }
-            displayButton()
-
+            displayAll()
+        }
+        txtBudget.setOnClickListener{
+            updateRecordDialog()
         }
 
-
-        displayButton()
-        setupListofDataIntoRecyclerView()
-        setupDataofExpenses(currentIndex)
-       log()
-
-
+        displayAll()
     }
+
+    private fun displayAll() {
+        try {
+            displayButton()
+            setupListofDataIntoRecyclerView()
+            setupDataofExpenses(currentIndex)
+        } catch (e: Exception) {
+            Log.e("error", "Display All Error")
+        }
+    }
+
 
     private fun initializeBudget() {
         if (getExpensesItemsList().size == 0) {//checks if there is existing budget
@@ -105,6 +108,14 @@ class MainActivity : AppCompatActivity() {
         }
         setupListofDataIntoRecyclerView()
     }
+
+    private fun setupDataofExpenses(index: Int) {
+        txtDate.text = getExpensesItemsList()[index].date
+        txtBudget.text = getExpensesItemsList()[index].budget.toString()
+        txtBalance.text = getExpensesItemsList()[index].balance.toString()
+    }
+
+
 
     private fun addBudget() {
         val budgetDialog = Dialog(this)
@@ -128,16 +139,15 @@ class MainActivity : AppCompatActivity() {
                         ExpensesModelClass(
                             budget.toInt(),
                             balance.toInt(),
+                            0,
                             getDate(currentIndex),
                             currentIndex
                         )
                     )
                 if (status > -1) {
                     Toast.makeText(applicationContext, "Budget Added", Toast.LENGTH_LONG).show()
-                    //setupListofDataIntoRecyclerView()
-                    setupDataofExpenses(currentIndex)
                     budgetDialog.dismiss()
-                    Log.i("mytag", "size " + getExpensesItemsList().size)
+                    displayAll()
                 }
             } else {
                 Toast.makeText(
@@ -148,7 +158,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
         budgetDialog.show()
-
+        displayAll()
     }
 
 
@@ -170,13 +180,30 @@ class MainActivity : AppCompatActivity() {
             val databaseHandler = ExpenseDatabaseHandler(this)
 
             if (!name.isEmpty() && !amount.isEmpty()) {
-                val status =
-                    databaseHandler.addExpense(ExpenseModelClass(0, name, amount.toInt(), currentIndex))
-                if (status > -1) {
-                    Toast.makeText(applicationContext, "Expense Added", Toast.LENGTH_LONG).show()
-                    //getExpensesItemsList()[currentIndex].budget-= amount.toInt()
-                    setupListofDataIntoRecyclerView()
-                    addDialog.dismiss()
+                if (amount.toInt() <= getExpensesItemsList()[currentIndex].balance) {
+                    val status =
+                        databaseHandler.addExpense(
+                            ExpenseModelClass(
+                                0,
+                                name,
+                                amount.toInt(),
+                                currentIndex
+                            )
+                        )
+                    if (status > -1) {
+                        Toast.makeText(applicationContext, "Expense Added", Toast.LENGTH_LONG)
+                            .show()
+                        setupListofDataIntoRecyclerView()
+                        calculateTotalExpense()
+                        addDialog.dismiss()
+                        displayAll()
+                    }
+                } else {
+                    val snackbar = Snackbar.make(
+                        findViewById(R.id.root_layout), "Invalid amount",
+                        Snackbar.LENGTH_LONG
+                    )
+                    snackbar.show()
                 }
             } else {
                 Toast.makeText(
@@ -185,6 +212,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             }
+            displayAll()
         })
         btnCancel.setOnClickListener(View.OnClickListener {
             addDialog.dismiss()
@@ -195,45 +223,43 @@ class MainActivity : AppCompatActivity() {
     /**
      * Method is used to show the custom update dialog.
      */
-    fun updateRecordDialog(expenseModelClass: ExpenseModelClass) {
+    private fun updateRecordDialog() {
 
 
         val updateDialog = Dialog(this)
         updateDialog.setCancelable(true)
         /*Set the screen content from a layout resource.
          The resource will be inflated, adding all top-level views to the screen.*/
-        updateDialog.setContentView(R.layout.dialog_update)
+        updateDialog.setContentView(R.layout.dialog_edit_balance)
 
-        val etUpdateName = updateDialog.findViewById<EditText>(R.id.edt_addName)
-        val etUpdateEmailId = updateDialog.findViewById<EditText>(R.id.edt_addAmount)
+        val edt_updateBudget = updateDialog.findViewById<EditText>(R.id.edt_updateBudget)
         val tvUpdate = updateDialog.findViewById<TextView>(R.id.tv_add)
-        val tvCancel = updateDialog.findViewById<TextView>(R.id.tv_cancel)
 
-        etUpdateName.setText(expenseModelClass.name)
-        etUpdateEmailId.setText(expenseModelClass.amount)
+        edt_updateBudget.setText(getExpensesItemsList()[currentIndex].budget.toString()).toString()
 
         tvUpdate.setOnClickListener(View.OnClickListener {
 
-            val name = etUpdateName.text.toString()
-            val amount = etUpdateEmailId.text.toString()
+            val amount = edt_updateBudget.text.toString()
 
-            val databaseHandler = ExpenseDatabaseHandler(this)
+            val databaseHandler = ExpensesDatabaseHandler(this)
 
-            if (!name.isEmpty() && !amount.isEmpty()) {
+            if (!amount.isEmpty()) {
                 val status =
-                    databaseHandler.updateExpense(
-                        ExpenseModelClass(
-                            expenseModelClass.id,
-                            name,
+                    databaseHandler.updateExpenses(
+                        ExpensesModelClass(
                             amount.toInt(),
-                            0
+                            amount.toInt() - getExpensesItemsList()[currentIndex].totalExpenses,
+                            getExpensesItemsList()[currentIndex].totalExpenses,
+                            getExpensesItemsList()[currentIndex].date,
+                            getExpensesItemsList()[currentIndex].groupId,
                         )
                     )
                 if (status > -1) {
-                    Toast.makeText(applicationContext, "Record Updated.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(applicationContext, "Budget Updated.", Toast.LENGTH_LONG).show()
 
                     setupListofDataIntoRecyclerView()
-
+                    displayAll()
+                    //txtBudget.text = getExpensesItemsList()[currentIndex].budget.toString()
                     updateDialog.dismiss() // Dialog will be dismissed
                 }
             } else {
@@ -244,17 +270,20 @@ class MainActivity : AppCompatActivity() {
                 ).show()
             }
         })
-        tvCancel.setOnClickListener(View.OnClickListener {
-            updateDialog.dismiss()
-        })
         //Start the dialog and display it on screen.
         updateDialog.show()
+
     }
 
     /**
      * Method is used to show the delete alert dialog.
      */
     fun deleteRecordAlertDialog(expenseModelClass: ExpenseModelClass) {
+/*
+
+*/
+
+
         val builder = AlertDialog.Builder(this)
         //set title for alert dialog
         builder.setTitle("Delete Record")
@@ -264,7 +293,7 @@ class MainActivity : AppCompatActivity() {
 
         //performing positive action
         builder.setPositiveButton("Yes") { dialogInterface, which ->
-
+            val amount = expenseModelClass.amount
 
             //creating the instance of DatabaseHandler class
             val expenseDatabaseHandler: ExpenseDatabaseHandler = ExpenseDatabaseHandler(this)
@@ -280,11 +309,21 @@ class MainActivity : AppCompatActivity() {
             if (status > -1) {
                 Toast.makeText(
                     applicationContext,
-                    "Record deleted successfully.",
+                    "Expense deleted successfully.",
                     Toast.LENGTH_LONG
                 ).show()
-
-                setupListofDataIntoRecyclerView()
+                displayAll()
+                val databaseHandler1 = ExpensesDatabaseHandler(this)
+                databaseHandler1.updateExpenses(
+                    ExpensesModelClass(
+                        getExpensesItemsList()[currentIndex].budget,
+                        getExpensesItemsList()[currentIndex].balance + amount,
+                        getExpensesItemsList()[currentIndex].totalExpenses - amount,
+                        getExpensesItemsList()[currentIndex].date,
+                        getExpensesItemsList()[currentIndex].groupId
+                    )
+                )
+                displayAll()
             }
 
             dialogInterface.dismiss() // Dialog will be dismissed
@@ -308,7 +347,8 @@ class MainActivity : AppCompatActivity() {
         //creating the instance of DatabaseHandler class
         val expenseDatabaseHandler: ExpenseDatabaseHandler = ExpenseDatabaseHandler(this)
         //calling the viewEmployee method of DatabaseHandler class to read the records
-        val expenseList: ArrayList<ExpenseModelClass> = expenseDatabaseHandler.viewExpense(currentIndex)
+        val expenseList: ArrayList<ExpenseModelClass> =
+            expenseDatabaseHandler.viewExpense(currentIndex)
 
         return expenseList
     }
@@ -339,40 +379,46 @@ class MainActivity : AppCompatActivity() {
             rvItemsList.visibility = View.GONE
             tvNoRecordsAvailable.visibility = View.VISIBLE
         }
-        calculateTotalExpense()
     }
 
-    private fun setupDataofExpenses(index: Int) {
-
-        try {
-            txtDate.text = getExpensesItemsList()[index].date.toString()//getExpensesItemsList()[index].date
-            txtBudget.text = getExpensesItemsList()[index].balance.toString()
-            txtBalance.text = getExpensesItemsList()[index].budget.toString()
-        } catch (Ex: Exception) {
-            Log.e("error", "error")
-        }
-
-    }
 
     private fun calculateTotalExpense() {
         var total = 0
         for (i in 1..getExpenseItemsList().size) {
-
-            total += getExpenseItemsList()[i - 1].amount
+            total += getExpenseItemsList()[i-1].amount
         }
-        txtTotalExpense.setText(total.toString())
+
+        val databaseHandler = ExpensesDatabaseHandler(this)
+        val status =
+            databaseHandler.updateExpenses(
+                ExpensesModelClass(
+                    getExpensesItemsList()[currentIndex].budget,
+                    getExpensesItemsList()[currentIndex].balance - total,
+                    total,
+                    getExpensesItemsList()[currentIndex].date,
+                    getExpensesItemsList()[currentIndex].groupId
+                )
+            )
+        txtBalance.text = getExpensesItemsList()[currentIndex].balance.toString()
+    }
+    private fun calculateAvg7Days(): Double {
+        var sum = 0.00
+        for (i in currentIndex downTo currentIndex-7) {
+            if(i == 0)
+                break
+            sum += getExpensesItemsList()[i].totalExpenses
+        }
+        return String.format("%.2f", sum/7).toDouble()
+
     }
 
-    private fun getDate(int : Int): String {
+    private fun getDate(int: Int): String {
 
 
         val cal = Calendar.getInstance()
         cal.add(Calendar.DAY_OF_YEAR, int)
-        val month_date = SimpleDateFormat("MMMM dd")
+        val month_date = SimpleDateFormat("MMMM d")
         val month_name = month_date.format(cal.time)
-
-
-
         return month_name.toString()
     }
 
@@ -381,15 +427,17 @@ class MainActivity : AppCompatActivity() {
         try {
             var totalrecords = 0
             for (i in 1..getExpensesItemsList().size)
-                Log.i("mytag", "Dates: " + getExpensesItemsList()[i-1].date)
+                Log.i("mytag", "Dates: " + getExpensesItemsList()[i - 1].date)
 
             Log.i("mytag", "total records: " + totalrecords.toString())
             Log.i("mytag", "current Index: " + currentIndex.toString())
             Log.i("mytag", getExpensesItemsList()[currentIndex].date)
-        }catch (Ex:Exception){
+        } catch (Ex: Exception) {
 
         }
 
     }
 
 }
+
+

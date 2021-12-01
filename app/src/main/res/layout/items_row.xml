@@ -14,10 +14,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_weight=".5"
-        android:fontFamily="@font/andada"
+        android:fontFamily="@font/adamina"
         android:text="@string/name_label"
         android:textColor="@color/text_color"
-        android:textSize="10sp" />
+        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/tv_email"
@@ -25,23 +25,17 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
         android:layout_weight=".5"
-        android:fontFamily="@font/andada"
+        android:fontFamily="@font/adamina"
         android:text="@string/email_label"
         android:textColor="@color/text_color"
-        android:textSize="10sp" />
-
-    <ImageView
-        android:id="@+id/iv_edit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight=".2"
-        android:src="@drawable/edit_logo" />
+        android:textSize="16sp" />
 
     <ImageView
         android:id="@+id/iv_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight=".2"
-        android:src="@drawable/delete_logo" />
+        android:src="@drawable/delete_logo"
+        android:tint="@color/cardview_dark_background" />
 
 </LinearLayout>

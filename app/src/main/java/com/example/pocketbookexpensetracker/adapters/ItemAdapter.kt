@@ -52,11 +52,7 @@ RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
 
 
 
-        holder.ivEdit.setOnClickListener {
-            if(context is MainActivity){
-                context.updateRecordDialog(item)
-            }
-        }
+
         holder.ivDelete.setOnClickListener {
             if(context is MainActivity){
                 context.deleteRecordAlertDialog(item)
@@ -91,7 +87,6 @@ RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
         val llMain = view.findViewById<LinearLayout>(R.id.llMain)
         val tvName = view.findViewById<TextView>(R.id.tv_name)
         val tvEmail = view.findViewById<TextView>(R.id.tv_email)
-        val ivEdit = view.findViewById<ImageView>(R.id.iv_edit)
         val ivDelete = view.findViewById<ImageView>(R.id.iv_delete)
     }
 }

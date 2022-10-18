@@ -12,7 +12,7 @@ class ExpensesDatabaseHandler(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
-        private val DATABASE_VERSION = 23
+        private val DATABASE_VERSION = 26
         private val DATABASE_NAME = "ExpensesDatabase"
 
         private val TABLE_CONTACTS = "ExpensesTable"

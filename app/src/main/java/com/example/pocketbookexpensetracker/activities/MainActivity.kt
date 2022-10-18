@@ -194,7 +194,7 @@ class MainActivity : AppCompatActivity() {
                         Toast.makeText(applicationContext, "Expense Added", Toast.LENGTH_LONG)
                             .show()
                         setupListofDataIntoRecyclerView()
-                        calculateTotalExpense()
+                        updateExpenses(calculateTotalExpense())
                         addDialog.dismiss()
                         displayAll()
                     }
@@ -259,7 +259,7 @@ class MainActivity : AppCompatActivity() {
 
                     setupListofDataIntoRecyclerView()
                     displayAll()
-                    //txtBudget.text = getExpensesItemsList()[currentIndex].budget.toString()
+                    updateExpenses(calculateTotalExpense())
                     updateDialog.dismiss() // Dialog will be dismissed
                 }
             } else {
@@ -318,7 +318,7 @@ class MainActivity : AppCompatActivity() {
                     ExpensesModelClass(
                         getExpensesItemsList()[currentIndex].budget,
                         getExpensesItemsList()[currentIndex].balance + amount,
-                        getExpensesItemsList()[currentIndex].totalExpenses - amount,
+                        getExpensesItemsList()[currentIndex].totalExpenses,
                         getExpensesItemsList()[currentIndex].date,
                         getExpensesItemsList()[currentIndex].groupId
                     )
@@ -348,7 +348,7 @@ class MainActivity : AppCompatActivity() {
         val expenseDatabaseHandler: ExpenseDatabaseHandler = ExpenseDatabaseHandler(this)
         //calling the viewEmployee method of DatabaseHandler class to read the records
         val expenseList: ArrayList<ExpenseModelClass> =
-            expenseDatabaseHandler.viewExpense(currentIndex)
+            expenseDatabaseHandler.viewExpense(getExpensesItemsList()[currentIndex].groupId)
 
         return expenseList
     }
@@ -382,18 +382,20 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun calculateTotalExpense() {
+    private fun calculateTotalExpense():Int {
         var total = 0
-        for (i in 1..getExpenseItemsList().size) {
-            total += getExpenseItemsList()[i-1].amount
+        for (i in 0..getExpenseItemsList().size-1) {
+            total += getExpenseItemsList()[i].amount
         }
-
+        return total
+    }
+    private fun updateExpenses(total:Int){
         val databaseHandler = ExpensesDatabaseHandler(this)
         val status =
             databaseHandler.updateExpenses(
                 ExpensesModelClass(
                     getExpensesItemsList()[currentIndex].budget,
-                    getExpensesItemsList()[currentIndex].balance - total,
+                    getExpensesItemsList()[currentIndex].budget - total,
                     total,
                     getExpensesItemsList()[currentIndex].date,
                     getExpensesItemsList()[currentIndex].groupId
@@ -401,41 +403,13 @@ class MainActivity : AppCompatActivity() {
             )
         txtBalance.text = getExpensesItemsList()[currentIndex].balance.toString()
     }
-    private fun calculateAvg7Days(): Double {
-        var sum = 0.00
-        for (i in currentIndex downTo currentIndex-7) {
-            if(i == 0)
-                break
-            sum += getExpensesItemsList()[i].totalExpenses
-        }
-        return String.format("%.2f", sum/7).toDouble()
-
-    }
 
     private fun getDate(int: Int): String {
-
-
         val cal = Calendar.getInstance()
         cal.add(Calendar.DAY_OF_YEAR, int)
         val month_date = SimpleDateFormat("MMMM d")
         val month_name = month_date.format(cal.time)
         return month_name.toString()
-    }
-
-
-    private fun log() {
-        try {
-            var totalrecords = 0
-            for (i in 1..getExpensesItemsList().size)
-                Log.i("mytag", "Dates: " + getExpensesItemsList()[i - 1].date)
-
-            Log.i("mytag", "total records: " + totalrecords.toString())
-            Log.i("mytag", "current Index: " + currentIndex.toString())
-            Log.i("mytag", getExpensesItemsList()[currentIndex].date)
-        } catch (Ex: Exception) {
-
-        }
-
     }
 
 }
